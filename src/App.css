@@ -119,7 +119,6 @@ body {
 }
 
 .card:hover {
-  transform: translateY(-6px);
   box-shadow: var(--shadow-md);
   border-color: #c2c7cc;
 }
