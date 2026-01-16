@@ -1,7 +1,7 @@
 import { Home, Search, Compass, MessageCircle, Heart, PlusSquare, User, Menu } from 'lucide-react';
 import '../App.css';
 
-const Sidebar = () => {
+const Sidebar = ({ onSearchClick }) => {
   return (
     <div className="sidebar">
       <div className="sidebar-logo">
@@ -13,12 +13,12 @@ const Sidebar = () => {
           <Home size={24} />
           <span>Home</span>
         </a>
-        <a href="#" className="nav-item">
-          <Search size={24} />
+        <a href="" className="nav-item" onClick={(e) => { e.preventDefault(); onSearchClick(); }}>
+          <Search size={24}/>
           <span>Search</span>
         </a>
         <a href="#" className="nav-item">
-          <Compass size={24} />
+          <Compass size={24}/>
           <span>Explore</span>
         </a>
         <a href="#" className="nav-item">

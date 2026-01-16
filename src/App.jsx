@@ -3,8 +3,11 @@ import "./App.css";
 import PostCard from "./components/PostCard";
 import PostForm from "./components/PostForm";
 import Sidebar from "./components/Sidebar";
+import Search from "./components/Search";
 
 function App() {
+  const [search, setSearch] = useState("");
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [task, setTask] = useState("");
   const [posts, setPosts] = useState([
     {
@@ -93,9 +96,19 @@ function handleLike(id) {
     setTask("");
   }
 
+  const postsFiltrados = posts.filter((post) =>
+    post.title.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
     <div className="app-container">
-      <Sidebar />
+      <Sidebar onSearchClick={() => setIsSearchOpen(!isSearchOpen)}/>
+
+      {isSearchOpen && (
+      <div className="search-panel">
+        <Search search={search} setSearch={setSearch} />
+      </div>
+    )}
       <div className="main-content">
         <PostForm
           task={task}
@@ -104,7 +117,7 @@ function handleLike(id) {
           count={posts.length}
         />
         <PostCard
-          posts={posts}
+          posts={postsFiltrados}
           onLike={handleLike}
           onDislike={handleDislike}
           onDelete={handleDelete}
