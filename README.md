@@ -1,17 +1,16 @@
-# Social Media - React
+O **Fleedly** é uma aplicação de feed social desenvolvida em React. O projeto simula as funcionalidades principais de uma rede social, permitindo a criação, edição, exclusão e interação com postagens.
 
-Projeto simples em React para praticar os conceitos fundamentais da biblioteca.
+## 🚀 Funcionalidades
 
-## 🧠 Conceitos Praticados:
-- **useState**: Gerenciamento de estado dos posts e votos.
-- **Renderização com .map()**: Listagem dinâmica dos cards de post.
-- **Atualização de estado imutável**: Manipulação correta do array de posts.
-- **Componentização**: Separação da Sidebar, Form e Cards.
+- **CRUD Completo**: Crie, visualize, edite e delete postagens.
+- **Persistência de Dados**: As postagens ficam salvas no navegador através do `localStorage`.
+- **Interação**: Sistema de Like/Dislike com lógica de ajuste de votos.
+- **Pesquisa Dinâmica**: Filtro de posts por título em tempo real.
+- **Responsividade**: Layout adaptado para diferentes tamanhos de tela.
 
-## 🚀 Funcionalidades:
-- Like e Dislike individual por post.
-- **Voto Único**: Bloqueio de spam (não permite curtir várias vezes).
-- **Troca de Voto**: Lógica inteligente para alternar entre like e dislike.
-- Interface moderna com Sidebar lateral.
+## 🛠️ Tecnologias Utilizadas
 
-Projeto em constante evolução! 🚀
+- **React** (Vite)
+- **Lucide React** (Ícones)
+- **CSS3** (Layout Flexbox e Grid)
+- **JavaScript ES6+**

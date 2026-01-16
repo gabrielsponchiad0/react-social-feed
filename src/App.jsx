@@ -1,45 +1,43 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 import PostCard from "./components/PostCard";
 import PostForm from "./components/PostForm";
 import Sidebar from "./components/Sidebar";
 import Search from "./components/Search";
 
+// Boa prática: Definir a chave do storage fora do componente
+const STORAGE_KEY = "@fleedly:posts";
+
 function App() {
   const [search, setSearch] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [task, setTask] = useState("");
-  const [posts, setPosts] = useState([
-    {
-      id: 1,
-      title: "Post 1",
-      image: `https://picsum.photos/seed/${1}/400/300`,
-      likes: 27,
-      dislikes: 4,
-      votoUsuario: null,
-    },
-    {
-      id: 2,
-      title: "Post 2",
-      image: `https://picsum.photos/seed/${2}/400/300`,
-      likes: 11,
-      dislikes: 87,
-      votoUsuario: null,
-    },
-    {
-      id: 3,
-      title: "Post 3",
-      image: `https://picsum.photos/seed/${3}/400/300`,
-      likes: 12,
-      dislikes: 1,
-      votoUsuario: null,
-    },
-  ]);
 
-function handleLike(id) {
+  // Lógica de Inicialização: Tenta carregar do LocalStorage ou usa o padrão
+  const [posts, setPosts] = useState(() => {
+    const salvos = localStorage.getItem(STORAGE_KEY);
+    if (salvos) {
+      return JSON.parse(salvos);
+    }
+    return [];
+  });
+
+  // Efeito de Persistência: Sempre que 'posts' mudar, salva no navegador
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
+  }, [posts]);
+
+  function handleLike(id) {
     const newPosts = posts.map((post) => {
       if (post.id === id) {
-        if (post.votoUsuario === "like") return post;
+        if (post.votoUsuario === "like") {
+          // Remove like
+          return {
+            ...post,
+            likes: post.likes - 1,
+            votoUsuario: null,
+          };
+        }
 
         const dislikeAdjustment = post.votoUsuario === "dislike" ? -1 : 0;
 
@@ -58,7 +56,14 @@ function handleLike(id) {
   function handleDislike(id) {
     const newPosts = posts.map((post) => {
       if (post.id === id) {
-        if (post.votoUsuario === "dislike") return post;
+        if (post.votoUsuario === "dislike") {
+          // Remove dislike
+          return {
+            ...post,
+            dislikes: post.dislikes - 1,
+            votoUsuario: null,
+          };
+        }
 
         const likeAdjustment = post.votoUsuario === "like" ? -1 : 0;
 
@@ -79,6 +84,26 @@ function handleLike(id) {
     setPosts(newPosts);
   }
 
+  function handleEdit(id) {
+    const newPosts = posts.map((post) => {
+      if (post.id === id) {
+        return { ...post, isEditing: !post.isEditing };
+      }
+      return post;
+    });
+    setPosts(newPosts);
+  }
+
+  function handleUpdate(id, newTitle) {
+    const newPosts = posts.map((post) => {
+      if (post.id === id) {
+        return { ...post, title: newTitle, isEditing: false };
+      }
+      return post;
+    });
+    setPosts(newPosts);
+  }
+
   function addPost(e) {
     e.preventDefault();
     if (!task.trim()) return;
@@ -90,6 +115,8 @@ function handleLike(id) {
       likes: 0,
       dislikes: 0,
       votoUsuario: null,
+      isEditing: false,
+      createdAt: new Date().toISOString(),
     };
 
     setPosts([newPost, ...posts]);
@@ -102,13 +129,13 @@ function handleLike(id) {
 
   return (
     <div className="app-container">
-      <Sidebar onSearchClick={() => setIsSearchOpen(!isSearchOpen)}/>
+      <Sidebar onSearchClick={() => setIsSearchOpen(!isSearchOpen)} />
 
       {isSearchOpen && (
-      <div className="search-panel">
-        <Search search={search} setSearch={setSearch} />
-      </div>
-    )}
+        <div className="search-panel">
+          <Search search={search} setSearch={setSearch} />
+        </div>
+      )}
       <div className="main-content">
         <PostForm
           task={task}
@@ -116,12 +143,19 @@ function handleLike(id) {
           addPost={addPost}
           count={posts.length}
         />
-        <PostCard
-          posts={postsFiltrados}
-          onLike={handleLike}
-          onDislike={handleDislike}
-          onDelete={handleDelete}
-        />
+
+        {posts.length === 0 ? (
+          <p>Nenhum post por aqui... Que tal criar o primeiro?</p>
+        ) : (
+          <PostCard
+            posts={postsFiltrados}
+            onLike={handleLike}
+            onDislike={handleDislike}
+            onDelete={handleDelete}
+            onEdit={handleEdit}
+            onUpdate={handleUpdate}
+          />
+        )}
       </div>
     </div>
   );
