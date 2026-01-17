@@ -5,7 +5,6 @@ import PostForm from "./components/PostForm";
 import Sidebar from "./components/Sidebar";
 import Search from "./components/Search";
 
-// Boa prática: Definir a chave do storage fora do componente
 const STORAGE_KEY = "@fleedly:posts";
 
 function App() {
@@ -13,7 +12,6 @@ function App() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [task, setTask] = useState("");
 
-  // Lógica de Inicialização: Tenta carregar do LocalStorage ou usa o padrão
   const [posts, setPosts] = useState(() => {
     const salvos = localStorage.getItem(STORAGE_KEY);
     if (salvos) {
@@ -22,7 +20,6 @@ function App() {
     return [];
   });
 
-  // Efeito de Persistência: Sempre que 'posts' mudar, salva no navegador
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
   }, [posts]);
@@ -31,7 +28,6 @@ function App() {
     const newPosts = posts.map((post) => {
       if (post.id === id) {
         if (post.votoUsuario === "like") {
-          // Remove like
           return {
             ...post,
             likes: post.likes - 1,
@@ -57,7 +53,6 @@ function App() {
     const newPosts = posts.map((post) => {
       if (post.id === id) {
         if (post.votoUsuario === "dislike") {
-          // Remove dislike
           return {
             ...post,
             dislikes: post.dislikes - 1,
