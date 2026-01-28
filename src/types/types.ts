@@ -1,4 +1,4 @@
-export type VotoUsuario = "like" | "dislike" | null;
+export type VotoUsuario = "like" | null;
 
 export interface Post {
   id: number;
@@ -6,7 +6,8 @@ export interface Post {
   image?: string;
   createdAt: string | number | Date;
   likes: number;
-  dislikes: number;
   votoUsuario: VotoUsuario;
   isEditing: boolean;
 }
+
+export type Theme = "dark" | "light"

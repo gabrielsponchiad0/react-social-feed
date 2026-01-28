@@ -1,209 +1,327 @@
-import { useState, useEffect, FormEvent } from "react";
+import { useState, useEffect } from "react";
+import { X, Clock } from "lucide-react";
 import "./App.css";
 import PostCard from "./components/PostCard";
 import PostForm from "./components/PostForm";
 import Sidebar from "./components/Sidebar";
 import Search from "./components/Search";
-import { Post } from "./types/Post";
+import Footer from "./components/Footer";
+import { Post, Theme } from "./types/types";
 
-const STORAGE_KEY = "@fleedly:posts";
+// chaves do localStorage 
+const STORAGE_KEY_POSTS = "@feedly:posts";
+const STORAGE_KEY_SEARCHES = "@feedly:recent_searches";
 
 function App() {
-  const [search, setSearch] = useState<string>("");
-  const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
-  const [task, setTask] = useState<string>("");
+  const [search, setSearch] = useState("");
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [theme, setTheme] = useState<Theme>("dark");
 
-  const [posts, setPosts] = useState<Post[]>(() => {
-    const salvos = localStorage.getItem(STORAGE_KEY);
-    if (salvos) {
-      try {
-        return JSON.parse(salvos);
-      } catch (e) {
-        console.error("Erro ao carregar posts do localStorage", e);
-        return [];
-      }
-    }
-    return [];
+  // pesquisas recentes (carrega uma vez na inicialização)
+  const [recentSearches, setRecentSearches] = useState<string[]>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY_SEARCHES);
+    return saved ? JSON.parse(saved) : [];
   });
 
+  // posts do feed
+  const [posts, setPosts] = useState<Post[]>(() => {
+    const saved = localStorage.getItem(STORAGE_KEY_POSTS);
+    if (!saved) return [];
+
+    try {
+      return JSON.parse(saved);
+    } catch {
+      console.error("Erro ao carregar posts do localStorage");
+      return [];
+    }
+  });
+
+ 
+  // localstorage para sincronizar (por enquanto)
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
+    localStorage.setItem(STORAGE_KEY_POSTS, JSON.stringify(posts));
   }, [posts]);
 
-  const handleLike = (id: number) => {
-    const newPosts = posts.map((post) => {
-      if (post.id === id) {
-        if (post.votoUsuario === "like") {
-          return {
-            ...post,
-            likes: post.likes - 1,
-            votoUsuario: null,
-          } as Post;
-        }
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY_SEARCHES, JSON.stringify(recentSearches));
+  }, [recentSearches]);
 
-        const dislikeAdjustment = post.votoUsuario === "dislike" ? -1 : 0;
+  // Ações abaixo
+  // like toggle (like / remover like)
+  const toggleLikePost = (postId: number) => {
+    setPosts(prev =>
+      prev.map(post => {
+        if (post.id !== postId) return post;
 
-        return {
-          ...post,
-          likes: post.likes + 1,
-          dislikes: post.dislikes + dislikeAdjustment,
-          votoUsuario: "like",
-        } as Post;
-      }
-      return post;
-    });
-    setPosts(newPosts);
-  }
-
-  const handleDislike = (id: number) => {
-    const newPosts = posts.map((post) => {
-      if (post.id === id) {
-        if (post.votoUsuario === "dislike") {
-          return {
-            ...post,
-            dislikes: post.dislikes - 1,
-            votoUsuario: null,
-          } as Post;
-        }
-
-        const likeAdjustment = post.votoUsuario === "like" ? -1 : 0;
+        const isLiked = post.votoUsuario === "like";
 
         return {
           ...post,
-          dislikes: post.dislikes + 1,
-          likes: post.likes + likeAdjustment,
-          votoUsuario: "dislike",
-        } as Post;
-      }
-      return post;
-    });
-    setPosts(newPosts);
-  }
+          likes: isLiked ? post.likes - 1 : post.likes + 1,
+          votoUsuario: isLiked ? null : "like",
+        };
+      })
+    );
+  };
 
-  const handleDelete = (id: number) => {
-    const newPosts = posts.filter((post) => post.id !== id);
-    setPosts(newPosts);
-  }
+  const deletePost = (postId: number) => {
+    setPosts(prev => prev.filter(post => post.id !== postId));
+  };
 
-  const handleEdit = (id: number) => {
-    const newPosts = posts.map((post) => {
-      if (post.id === id) {
-        return { ...post, isEditing: !post.isEditing };
-      }
-      return post;
-    });
-    setPosts(newPosts);
-  }
+  // alterna modo edição de um post específico
+  const toggleEditMode = (postId: number) => {
+    setPosts(prev =>
+      prev.map(post =>
+        post.id === postId
+          ? { ...post, isEditing: !post.isEditing }
+          : post
+      )
+    );
+  };
 
-  const handleUpdate = (id: number, newTitle: string) => {
-    const newPosts = posts.map((post) => {
-      if (post.id === id) {
-        return { ...post, title: newTitle, isEditing: false };
-      }
-      return post;
-    });
-    setPosts(newPosts);
-  }
+  // salva edição e sai do modo edição
+  const saveUpdatedPost = (postId: number, newTitle: string) => {
+    setPosts(prev =>
+      prev.map(post =>
+        post.id === postId
+          ? { ...post, title: newTitle, isEditing: false }
+          : post
+      )
+    );
+  };
 
-  const addPost = (e: FormEvent) => {
-    e.preventDefault();
-    if (!task.trim()) return;
-
+  // criação de novo post
+  const createNewPost = (title: string, image?: string) => {
     const newPost: Post = {
       id: Date.now(),
-      title: task,
-      image: `https://picsum.photos/seed/${Date.now()}/400/300`,
+      title,
+      image,
       likes: 0,
-      dislikes: 0,
       votoUsuario: null,
       isEditing: false,
       createdAt: new Date().toISOString(),
     };
 
-    setPosts([newPost, ...posts]);
-    setTask("");
-  }
+    setPosts(prev => [newPost, ...prev]);
+  };
 
-  const postsFiltrados = posts.filter((post) =>
+
+  const toggleTheme = () => {
+    setTheme(prev => (prev === "dark" ? "light" : "dark"));
+  };
+
+  // adiciona busca recente (sem duplicar e com limite)
+  const addRecentSearch = (query: string) => {
+    const cleaned = query.trim();
+    if (!cleaned) return;
+
+    setRecentSearches(prev => {
+      const withoutDuplicate = prev.filter(q => q !== cleaned);
+      return [cleaned, ...withoutDuplicate].slice(0, 10);
+    });
+  };
+
+  const removeRecentSearch = (query: string) => {
+    setRecentSearches(prev => prev.filter(q => q !== query));
+  };
+
+  const clearAllRecentSearches = () => {
+    setRecentSearches([]);
+  };
+
+  // filtro do feed baseado na busca atual
+  const filteredPosts = posts.filter(post =>
     post.title.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
-    <div className="min-h-screen bg-black text-neutral-100 flex flex-col md:flex-row overflow-x-hidden relative">
-      <Sidebar 
-        onSearchClick={() => setIsSearchOpen(!isSearchOpen)} 
-        isCollapsed={isSearchOpen} 
+    <div
+      data-theme={theme}
+      className="
+        min-h-screen bg-[var(--bg-primary)]
+        text-[var(--text-primary)] flex flex-col
+        md:flex-row transition-colors duration-300
+      "
+    >
+      {/* Sidebar principal */}
+      <Sidebar
+        onSearchClick={() => setIsSearchOpen(!isSearchOpen)}
+        isCollapsed={false}
       />
 
-      {/* Menu de Pesquisa */}
-      <div 
+      {/* Painel de busca - Desktop */}
+      <div
         className={`
-          fixed top-0 bottom-0 bg-black border-r border-neutral-800 z-40 transition-all duration-300 ease-in-out
-          hidden md:block shadow-[10px_0_30px_rgba(0,0,0,0.5)]
-          ${isSearchOpen ? 'left-16 w-80 opacity-100' : '-left-80 w-80 opacity-0'}
+          fixed top-0 bottom-0 z-40 hidden md:block
+          bg-[var(--bg-primary)] border-r border-[var(--border-color)]
+          transition-all duration-300 ease-in-out
+          shadow-[-10px_0_30px_rgba(0,0,0,0.5)]
+          ${isSearchOpen ? "left-64 w-80 opacity-100" : "-left-80 w-80 opacity-0"}
         `}
       >
         <div className="p-6 h-full flex flex-col">
           <h2 className="text-2xl font-bold mb-8">Pesquisa</h2>
-          <Search search={search} setSearch={setSearch} />
-          
+
+          <Search
+            search={search}
+            setSearch={setSearch}
+            onSearch={addRecentSearch}
+          />
+
+          {/* pesquisas recentes */}
           <div className="mt-8 flex-1 overflow-y-auto custom-scrollbar">
-             <div className="flex justify-between items-center px-1 mb-4">
-               <p className="text-sm text-neutral-200 font-bold">Recentes</p>
-               <button className="text-xs text-blue-500 font-bold hover:text-white transition-colors">Limpar tudo</button>
-             </div>
-             <div className="flex flex-col items-center justify-center h-48 px-8 text-center">
-                <p className="text-sm text-neutral-500 font-medium">Nenhuma pesquisa recente.</p>
-             </div>
+            <div className="flex justify-between items-center mb-4">
+              <p className="text-sm font-bold">Recentes</p>
+              {recentSearches.length > 0 && (
+                <button
+                  onClick={clearAllRecentSearches}
+                  className="text-xs font-bold text-blue-500 hover:text-[var(--text-primary)]"
+                >
+                  Limpar tudo
+                </button>
+              )}
+            </div>
+
+            {recentSearches.length === 0 ? (
+              <p className="text-center text-sm text-[var(--text-secondary)]">
+                Nenhuma pesquisa recente.
+              </p>
+            ) : (
+              recentSearches.map((item, index) => (
+                <div
+                  key={index}
+                  onClick={() => setSearch(item)}
+                  className="group flex justify-between items-center px-2 py-3 rounded-lg hover:bg-[var(--bg-secondary)] cursor-pointer"
+                >
+                  <div className="flex items-center gap-3">
+                    <Clock size={16} />
+                    <span className="truncate max-w-[180px]">{item}</span>
+                  </div>
+                  <button
+                    onClick={e => {
+                      e.stopPropagation();
+                      removeRecentSearch(item);
+                    }}
+                    className="opacity-0 group-hover:opacity-100"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>
 
-      {/* Pesquisa para Mobile */}
+      {/* Painel de busca - Mobile */}
       {isSearchOpen && (
-        <div className="fixed top-0 left-0 right-0 bottom-14 bg-black z-40 md:hidden p-5 flex flex-col animate-in fade-in duration-300">
-          <div className="flex items-center gap-4 mb-8">
-            <h2 className="text-2xl font-bold flex-1">Pesquisa</h2>
+        <div className="fixed inset-0 z-[60] bg-[var(--bg-primary)] p-5 flex flex-col md:hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-2xl font-bold">Pesquisa</h2>
+            <button 
+              onClick={() => setIsSearchOpen(false)}
+              className="p-2 rounded-full bg-[var(--bg-secondary)] text-[var(--text-primary)] transition-transform active:scale-90"
+            >
+              <X size={20} />
+            </button>
           </div>
-          <Search search={search} setSearch={setSearch} />
           
-          <div className="mt-8 text-center pt-20">
-             <p className="text-neutral-600 text-sm">Digite algo para buscar...</p>
+          <Search 
+            search={search} 
+            setSearch={setSearch} 
+            onSearch={(query) => {
+              addRecentSearch(query);
+              setIsSearchOpen(false);
+            }} 
+          />
+          
+          <div className="mt-8 flex-1 overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <p className="text-sm font-bold opacity-50 uppercase tracking-wider">Recentes</p>
+              {recentSearches.length > 0 && (
+                <button 
+                  onClick={clearAllRecentSearches}
+                  className="text-xs font-bold text-blue-500"
+                >
+                  Limpar tudo
+                </button>
+              )}
+            </div>
+
+            {recentSearches.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-20 opacity-30">
+                <Clock size={40} className="mb-3" />
+                <p className="text-sm">Nenhuma pesquisa recente</p>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-2">
+                {recentSearches.map((item, index) => (
+                  <div 
+                    key={index}
+                    onClick={() => {
+                      setSearch(item);
+                      setIsSearchOpen(false);
+                    }}
+                    className="flex justify-between items-center py-4 px-2 border-b border-[var(--border-color)]/30 active:bg-[var(--bg-secondary)] rounded-lg transition-colors"
+                  >
+                    <div className="flex items-center gap-4">
+                      <Clock size={18} className="opacity-40" />
+                      <span className="text-base font-medium">{item}</span>
+                    </div>
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeRecentSearch(item);
+                      }}
+                      className="p-2 opacity-40 hover:opacity-100"
+                    >
+                      <X size={18} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}
 
-      <main 
+      {/* Conteúdo principal */}
+      <main
         className={`
-          flex-1 transition-all duration-300 flex flex-col bg-neutral-950/20 pb-24 md:pb-0 min-w-0
-          ${isSearchOpen ? 'md:ml-20' : 'md:ml-64'}
+          flex-1 flex flex-col pb-24 md:pb-0
+          transition-all duration-300
+          ${isSearchOpen ? "md:ml-64 md:px-10" : "md:ml-64"}
         `}
       >
-        <div className="mx-auto w-full max-w-xl py-4 md:py-12 px-3 md:px-6 box-border">
-          <PostForm
-            task={task}
-            setTask={setTask}
-            addPost={addPost}
-            count={posts.length}
-          />
+        {/* botão de alternar tema */}
+        <button
+          onClick={toggleTheme}
+          className="fixed top-4 right-4 z-50 p-2 rounded-full bg-[var(--bg-secondary)]"
+        >
+          {theme === "dark" ? "☀️" : "🌙"}
+        </button>
 
-          <div className="mt-8 md:mt-12 space-y-8">
+        <div className="mx-auto w-full max-w-xl py-12 px-4">
+          <PostForm onAddPost={createNewPost} count={posts.length} />
+
+          <div className="mt-12 space-y-8">
             {posts.length === 0 ? (
-              <div className="text-center py-20 bg-neutral-900/20 rounded-3xl border border-dashed border-neutral-800">
-                <p className="text-neutral-500 font-medium">Sua timeline está vazia...</p>
-              </div>
+              <p className="text-center text-neutral-500">
+                Sua timeline está vazia...
+              </p>
             ) : (
               <PostCard
-                posts={postsFiltrados}
-                onLike={handleLike}
-                onDislike={handleDislike}
-                onDelete={handleDelete}
-                onEdit={handleEdit}
-                onUpdate={handleUpdate}
+                posts={filteredPosts}
+                onLike={toggleLikePost}
+                onDelete={deletePost}
+                onEdit={toggleEditMode}
+                onUpdate={saveUpdatedPost}
               />
             )}
           </div>
         </div>
+
+        <Footer />
       </main>
     </div>
   );
