@@ -1,6 +1,3 @@
-/**
- * Componente de Rodapé (Footer)
- */
 const Footer = () => {
     const currentYear = new Date().getFullYear();
 

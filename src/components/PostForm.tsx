@@ -2,12 +2,13 @@ import { useState, FormEvent, useRef, useEffect } from "react";
 import { Image as ImageIcon, X, Smile, Calendar, MapPin } from "lucide-react";
 
 interface PostFormProps {
-  // Função fornecida pelo componente pai para criar um novo post
+  // função fornecida pelo componente pai para criar um novo post
   onAddPost: (title: string, image?: string) => void;
   count: number;
+  isPosting: boolean;
 }
 
-function PostForm({ onAddPost, count }: PostFormProps) {
+function PostForm({ onAddPost, count, isPosting }: PostFormProps) {
   const [content, setContent] = useState("");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
 
@@ -101,7 +102,7 @@ function PostForm({ onAddPost, count }: PostFormProps) {
                 <img
                   src={imageUrl}
                   alt="Random preview"
-                  className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-700"
+                  className="w-full h-full object-cover"
                 />
                 <button
                   type="button"
@@ -109,7 +110,7 @@ function PostForm({ onAddPost, count }: PostFormProps) {
                   className="absolute top-2 right-2 p-1.5 bg-black/60 hover:bg-black/80 text-white rounded-full transition-colors backdrop-blur-md"
                   title="Remover imagem"
                 >
-                  <X size={18} />
+                  <X size={18} className="cursor-pointer"/>
                 </button>
               </div>
             )}
@@ -127,7 +128,7 @@ function PostForm({ onAddPost, count }: PostFormProps) {
                   "
                   title="Adicionar imagem aleatória"
                 >
-                  <ImageIcon size={20} />
+                  <ImageIcon size={20} className="cursor-pointer" />
                 </button>
 
                 {/* Ícones reservados para features futuras */}
@@ -152,18 +153,17 @@ function PostForm({ onAddPost, count }: PostFormProps) {
               </div>
 
               <button
-                type="submit"
-                disabled={!content.trim() && !imageUrl}
+                disabled={isPosting || !content.trim()}
                 className={`
-                  px-5 py-2 rounded-full font-bold text-base transition-all
+                 px-6 py-2 rounded-full font-bold text-white transition-all
                   ${
-                    content.trim() || imageUrl
-                      ? "cursor-pointer bg-blue-500 hover:bg-blue-600 text-white shadow-lg shadow-blue-500/20 active:scale-95"
-                      : "bg-blue-500/50 text-white/50 cursor-not-allowed"
+                    isPosting || !content.trim()
+                      ? "bg-[var(--accent-color)]/50 cursor-not-allowed opacity-50"
+                      : "cursor-pointer bg-[var(--accent-color)] hover:brightness-110 active:scale-95 shadow-md shadow-[var(--accent-color)]/20"
                   }
                 `}
               >
-                Postar
+                {isPosting ? "Postando..." : "Postar"}
               </button>
             </div>
           </div>

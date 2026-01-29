@@ -4,13 +4,14 @@ interface SearchProps {
   search: string;
   setSearch: (value: string) => void;
   onSearch?: (query: string) => void;
+  isSearching?: boolean;
 }
 
 /**
  * Input controlado de busca.
  * O estado vem do componente pai para permitir filtros globais.
  */
-function Search({ search, setSearch, onSearch }: SearchProps) {
+function Search({ search, setSearch, onSearch, isSearching }: SearchProps) {
   // busca apenas ao pressionar Enter, se houver texto válido
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && search.trim() && onSearch) {
@@ -21,7 +22,11 @@ function Search({ search, setSearch, onSearch }: SearchProps) {
   return (
     <div className="relative group w-full">
       <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-secondary)] group-focus-within:text-[var(--accent-color)] transition-colors pointer-events-none">
-        <SearchIcon size={18} />
+        {isSearching ? (
+          <div className="w-4 h-4 border-2 border-[var(--accent-color)] border-t-transparent rounded-full animate-spin" />
+        ) : (
+          <SearchIcon size={18} />
+        )}
       </div>
       <input
         type="text"

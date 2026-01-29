@@ -9,6 +9,7 @@ import {
   Menu,
   LucideIcon,
 } from "lucide-react";
+import { NavLink } from "react-router-dom";
 import "../App.css";
 
 /**
@@ -19,9 +20,10 @@ import "../App.css";
 interface SidebarProps {
   onSearchClick: () => void;
   isCollapsed: boolean;
+  isSearchOpen: boolean;
 }
 
-const Sidebar = ({ onSearchClick, isCollapsed }: SidebarProps) => {
+const Sidebar = ({ onSearchClick, isCollapsed, isSearchOpen }: SidebarProps) => {
   return (
     <>
       {/* Sidebar Desktop */}
@@ -55,29 +57,30 @@ const Sidebar = ({ onSearchClick, isCollapsed }: SidebarProps) => {
         )}
 
         <nav className="flex-1 space-y-2">
-          <NavItem icon={Home} label="Home" active isCollapsed={isCollapsed} />
+          <NavItem icon={Home} label="Home" to="/" isCollapsed={isCollapsed} />
 
           {/* item de busca abre o input global em vez de navegar */}
           <NavItem
             icon={Search}
             label="Pesquisar"
+            to="#"
+            active={isSearchOpen}
             isCollapsed={isCollapsed}
-            active={isCollapsed}
             onClick={(e) => {
               e.preventDefault();
               onSearchClick();
             }}
           />
 
-          <NavItem icon={Compass} label="Explorar" isCollapsed={isCollapsed} />
-          <NavItem icon={MessageCircle} label="Mensagens" isCollapsed={isCollapsed} />
-          <NavItem icon={Heart} label="Notificações" isCollapsed={isCollapsed} />
-          <NavItem icon={PlusSquare} label="Criar" isCollapsed={isCollapsed} />
-          <NavItem icon={User} label="Perfil" isCollapsed={isCollapsed} />
+          <NavItem icon={Compass} label="Explorar" to="/explore" isCollapsed={isCollapsed} />
+          <NavItem icon={MessageCircle} label="Mensagens" to="/messages" isCollapsed={isCollapsed} />
+          <NavItem icon={Heart} label="Notificações" to="/notifications" isCollapsed={isCollapsed} />
+          <NavItem icon={PlusSquare} label="Criar" to="/create" isCollapsed={isCollapsed} />
+          <NavItem icon={User} label="Perfil" to="/profile" isCollapsed={isCollapsed} />
         </nav>
 
         <div className="mt-auto">
-          <NavItem icon={Menu} label="Mais" isCollapsed={isCollapsed} />
+          <NavItem icon={Menu} label="Mais" to="/settings" isCollapsed={isCollapsed} />
         </div>
       </aside>
 
@@ -89,24 +92,32 @@ const Sidebar = ({ onSearchClick, isCollapsed }: SidebarProps) => {
           items-center justify-around px-4 z-[100]
         "
       >
-        <Home className="text-[var(--text-primary)]" size={26} />
+        <NavLink to="/" className={({ isActive }) => isActive ? "text-[var(--text-primary)]" : "text-[var(--text-secondary)]"}>
+          <Home size={26} />
+        </NavLink>
 
-        <Search
-          size={26}
-          className={
-            isCollapsed
-              ? "text-[var(--text-primary)]"
-              : "text-[var(--text-secondary)]"
-          }
+        <button
           onClick={(e: React.MouseEvent) => {
             e.preventDefault();
             onSearchClick();
           }}
-        />
+          className={`
+            transition-colors duration-200 cursor-pointer
+            ${isSearchOpen ? "text-[var(--text-primary)]" : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"}
+          `}
+        >
+          <Search size={26} />
+        </button>
 
-        <PlusSquare className="text-[var(--text-secondary)]" size={26} />
-        <Compass className="text-[var(--text-secondary)]" size={26} />
-        <div className="w-6 h-6 rounded-full bg-[var(--bg-secondary)] border border-[var(--border-color)]" />
+        <NavLink to="/create" className={({ isActive }) => isActive ? "text-[var(--text-primary)]" : "text-[var(--text-secondary)]"}>
+          <PlusSquare size={26} />
+        </NavLink>
+        <NavLink to="/explore" className={({ isActive }) => isActive ? "text-[var(--text-primary)]" : "text-[var(--text-secondary)]"}>
+          <Compass size={26} />
+        </NavLink>
+        <NavLink to="/profile">
+          <div className="w-6 h-6 rounded-full bg-[var(--bg-secondary)] border border-[var(--border-color)]" />
+        </NavLink>
       </nav>
     </>
   );
@@ -119,37 +130,41 @@ const Sidebar = ({ onSearchClick, isCollapsed }: SidebarProps) => {
 interface NavItemProps {
   icon: LucideIcon;
   label: string;
-  active?: boolean;
+  to: string;
   isCollapsed?: boolean;
+  active?: boolean;
   onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
 }
 
 const NavItem = ({
   icon: Icon,
   label,
-  active = false,
+  to,
   isCollapsed = false,
+  active,
   onClick,
 }: NavItemProps) => {
   return (
-    <a
-      href="#"
+    <NavLink
+      to={to}
       onClick={onClick}
-      className={`
-        flex items-center gap-4 px-3 py-3 rounded-lg duration-200 group relative
-        ${
-          active
-            ? "bg-[var(--bg-secondary)] text-[var(--text-primary)]"
-            : "text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]"
-        }
-        ${isCollapsed ? "justify-center" : ""}
-      `}
+      className={({ isActive }) => {
+        const isCurrentlyActive = active !== undefined ? active : isActive;
+        
+        return `
+          flex items-center gap-4 px-3 py-3 rounded-lg duration-200 group relative
+          ${
+            isCurrentlyActive
+              ? "bg-[var(--bg-secondary)] text-[var(--text-primary)]"
+              : "text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]"
+          }
+          ${isCollapsed ? "justify-center" : ""}
+        `;
+      }}
     >
       <Icon
         size={24}
-        className={`shrink-0 transition-transform ${
-          active ? "scale-110" : "group-hover:scale-110"
-        }`}
+        className="shrink-0 transition-transform group-hover:scale-110"
       />
 
       {!isCollapsed && (
@@ -171,7 +186,7 @@ const NavItem = ({
           {label}
         </div>
       )}
-    </a>
+    </NavLink>
   );
 };
 

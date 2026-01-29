@@ -8,6 +8,7 @@ export interface Post {
   likes: number;
   votoUsuario: VotoUsuario;
   isEditing: boolean;
+  isPosting: boolean;
 }
 
 export type Theme = "dark" | "light"
