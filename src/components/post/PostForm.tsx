@@ -1,5 +1,6 @@
 import { useState, FormEvent, useRef, useEffect } from "react";
 import { Image as ImageIcon, X, Smile, Calendar, MapPin } from "lucide-react";
+import EmojiPicker from 'emoji-picker-react';
 
 interface PostFormProps {
   // função fornecida pelo componente pai para criar um novo post
@@ -11,8 +12,24 @@ interface PostFormProps {
 function PostForm({ onAddPost, count, isPosting }: PostFormProps) {
   const [content, setContent] = useState("");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const emojiPickerRef = useRef<HTMLDivElement>(null);
+
+  /**
+   * fecha o seletor de emoji ao clicar fora dele
+   */
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target as Node)) {
+        setShowEmojiPicker(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   /**
    * ajusta automaticamente a altura do textarea conforme o texto cresce,
@@ -43,6 +60,12 @@ function PostForm({ onAddPost, count, isPosting }: PostFormProps) {
     // reset
     setContent("");
     setImageUrl(null);
+    setShowEmojiPicker(false);
+  };
+
+  const onEmojiClick = (emojiData: { emoji: string }) => {
+    setContent((prev) => prev + emojiData.emoji);
+    textareaRef.current?.focus();
   };
 
   return (
@@ -131,13 +154,32 @@ function PostForm({ onAddPost, count, isPosting }: PostFormProps) {
                   <ImageIcon size={20} className="cursor-pointer" />
                 </button>
 
-                {/* Ícones reservados para features futuras */}
-                <button
-                  type="button"
-                  className="p-2 text-[var(--accent-color)] opacity-50 cursor-not-allowed"
-                >
-                  <Smile size={20} />
-                </button>
+                <div className="relative" ref={emojiPickerRef}>
+                  <button
+                    type="button"
+                    onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                    className={`p-2 text-[var(--accent-color)] hover:bg-[var(--accent-color)]/10 rounded-full transition-colors ${showEmojiPicker ? 'bg-[var(--accent-color)]/10' : ''}`}
+                    title="Adicionar emoji"
+                  >
+                    <Smile size={20} className="cursor-pointer" />
+                  </button>
+
+                  {showEmojiPicker && (
+                    <div className="absolute top-full left-0 mt-2 z-50 animate-in fade-in zoom-in duration-200 origin-top-left">
+                      <div className="shadow-2xl rounded-xl overflow-hidden border border-[var(--border-color)]">
+                        <EmojiPicker 
+                          onEmojiClick={onEmojiClick}
+                          theme={document.documentElement.classList.contains('light') ? 'light' : 'dark' as any}
+                          lazyLoadEmojis={true}
+                          skinTonesDisabled
+                          searchPlaceholder="Pesquisar emoji..."
+                          width={350}
+                          height={400}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
                 <button
                   type="button"
                   className="p-2 text-[var(--accent-color)] opacity-50 cursor-not-allowed"
