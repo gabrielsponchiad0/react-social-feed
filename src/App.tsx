@@ -1,11 +1,10 @@
 // Componentes
 import { useState } from "react";
 import "./App.css";
-import Sidebar from "./components/Sidebar";
-import Footer from "./components/Footer";
-import SearchPanel from "./components/SearchPanel";
-import { Theme } from "./types/types";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Sidebar from "./components/layout/Sidebar";
+import Footer from "./components/layout/Footer";
+import SearchPanel from "./components/navigation/SearchPanel";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 // Páginas
 import Home from "./pages/Home";
@@ -21,7 +20,6 @@ import { useSearch } from "./hooks/useSearch";
 
 function App() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [theme, setTheme] = useState<Theme>("dark");
 
   const {
     posts,
@@ -43,9 +41,6 @@ function App() {
     clearAllRecentSearches,
   } = useSearch();
 
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
-  };
 
   // filtro do feed baseado na busca atual (debounced)
   const filteredPosts = posts.filter((post) =>
@@ -55,7 +50,6 @@ function App() {
   return (
     <BrowserRouter>
       <div
-        data-theme={theme}
         className="
           min-h-screen bg-[var(--bg-primary)]
           text-[var(--text-primary)] flex flex-col
@@ -87,16 +81,12 @@ function App() {
             ${isSearchOpen ? "md:ml-64 md:px-10" : "md:ml-64"}
           `}
         >
-          <button
-            onClick={toggleTheme}
-            className="fixed top-4 right-4 z-50 p-2 rounded-full bg-[var(--bg-secondary)] cursor-pointer"
-          >
-            {theme === "dark" ? "☀️" : "🌙"}
-          </button>
+
 
           <Routes>
+            <Route path="/" element={<Navigate to="/home" replace />} />
             <Route
-              path="/"
+              path="/home"
               element={
                 <Home
                   posts={posts}

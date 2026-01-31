@@ -10,5 +10,3 @@ export interface Post {
   isEditing: boolean;
   isPosting: boolean;
 }
-
-export type Theme = "dark" | "light"

@@ -10,7 +10,7 @@
   --input-bg: #171717;
 }
 
-[data-theme='light'] {
+.light {
   --bg-primary: #ffffff;
   --bg-secondary: #ffffff;
   --text-primary: #171717;

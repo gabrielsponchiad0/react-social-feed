@@ -3,14 +3,14 @@ import {
   Search,
   Compass,
   MessageCircle,
-  Heart,
   PlusSquare,
   User,
   Menu,
+  Bell,
   LucideIcon,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
-import "../App.css";
+import "../../App.css";
 
 /**
  * Sidebar responsiva:
@@ -57,7 +57,7 @@ const Sidebar = ({ onSearchClick, isCollapsed, isSearchOpen }: SidebarProps) => 
         )}
 
         <nav className="flex-1 space-y-2">
-          <NavItem icon={Home} label="Home" to="/" isCollapsed={isCollapsed} />
+          <NavItem icon={Home} label="Home" to="/home" isCollapsed={isCollapsed} />
 
           {/* item de busca abre o input global em vez de navegar */}
           <NavItem
@@ -74,7 +74,7 @@ const Sidebar = ({ onSearchClick, isCollapsed, isSearchOpen }: SidebarProps) => 
 
           <NavItem icon={Compass} label="Explorar" to="/explore" isCollapsed={isCollapsed} />
           <NavItem icon={MessageCircle} label="Mensagens" to="/messages" isCollapsed={isCollapsed} />
-          <NavItem icon={Heart} label="Notificações" to="/notifications" isCollapsed={isCollapsed} />
+          <NavItem icon={Bell} label="Notificações" to="/notifications" isCollapsed={isCollapsed} />
           <NavItem icon={PlusSquare} label="Criar" to="/create" isCollapsed={isCollapsed} />
           <NavItem icon={User} label="Perfil" to="/profile" isCollapsed={isCollapsed} />
         </nav>
@@ -92,7 +92,7 @@ const Sidebar = ({ onSearchClick, isCollapsed, isSearchOpen }: SidebarProps) => 
           items-center justify-around px-4 z-[100]
         "
       >
-        <NavLink to="/" className={({ isActive }) => isActive ? "text-[var(--text-primary)]" : "text-[var(--text-secondary)]"}>
+        <NavLink to="/home" className={({ isActive }) => isActive ? "text-[var(--text-primary)]" : "text-[var(--text-secondary)]"}>
           <Home size={26} />
         </NavLink>
 
@@ -109,8 +109,8 @@ const Sidebar = ({ onSearchClick, isCollapsed, isSearchOpen }: SidebarProps) => 
           <Search size={26} />
         </button>
 
-        <NavLink to="/create" className={({ isActive }) => isActive ? "text-[var(--text-primary)]" : "text-[var(--text-secondary)]"}>
-          <PlusSquare size={26} />
+        <NavLink to="/notifications" className={({ isActive }) => isActive ? "text-[var(--text-primary)]" : "text-[var(--text-secondary)]"}>
+          <Bell size={26} />
         </NavLink>
         <NavLink to="/explore" className={({ isActive }) => isActive ? "text-[var(--text-primary)]" : "text-[var(--text-secondary)]"}>
           <Compass size={26} />

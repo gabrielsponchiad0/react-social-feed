@@ -41,14 +41,21 @@ Este projeto foi originalmente desenvolvido em **JavaScript** e posteriormente *
   As postagens são salvas no **localStorage**, garantindo que os dados não sejam perdidos ao recarregar a página.
 
 - **Busca Dinâmica**  
-  Drawer de pesquisa que filtra os posts em **tempo real**.
+  Painel de pesquisa que filtra os posts em **tempo real**.
 
-- **Interface Moderna (Dark Mode)**  
-  Layout inspirado em redes sociais modernas, com foco em experiência do usuário.
+- **Interface Moderna (Theming)**  
+  Suporte completo a **Dark Mode**, **Light Mode** e **System Mode** utilizando o padrão **Shadcn UI**.
+
+- **Organização Modular**  
+  Arquitetura de pastas organizada por responsabilidade:
+  - `navigation`: Componentes de busca e menus
+  - `post`: Lógica e exibição de postagens
+  - `layout`: Elementos estruturais (Sidebar, Footer)
+  - `theme`: Provedor de tema e estilos globais
 
 - **Layout Responsivo**  
   - Sidebar retrátil no desktop  
-  - Navegação otimizada para dispositivos móveis
+  - Navegação fixada para dispositivos móveis
 
 ---
 
@@ -57,14 +64,15 @@ Este projeto foi originalmente desenvolvido em **JavaScript** e posteriormente *
 - **React** (Vite)
 - **TypeScript**
 - **Tailwind CSS**
-- **Lucide React** (ícones)
+- **Shadcn UI** (Gerenciamento de Tema)
+- **Lucide React** (Ícones)
 
 ---
 
 ## 📌 Observações
 
-Este projeto não utiliza API externa.  
-Toda a lógica é feita no front-end, com foco em **estado, interação e organização de código**.
+Este projeto não utiliza API externa até o momento.  
+Toda a lógica é feita no front-end, focando na manipulação de **estado, interações complexas e organização de código**.
 
 ---
 
@@ -73,7 +81,5 @@ Toda a lógica é feita no front-end, com foco em **estado, interação e organi
 - Integração com API REST
 - Autenticação de usuários
 - Paginação de posts
-- Testes automatizados
-- Tema customizável (Light / Dark)
 
 ---

@@ -1,6 +1,6 @@
 import { Pencil, Check, X, Heart } from "lucide-react";
 import { useState } from "react";
-import { Post } from "../types/types";
+import { Post } from "../../types/types";
 
 /**
  * Props do item individual do post.

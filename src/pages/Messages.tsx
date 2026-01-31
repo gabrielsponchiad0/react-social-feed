@@ -1,5 +1,3 @@
-import React from 'react';
-
 const Messages = () => {
   return (
     <div className="py-12 px-4">

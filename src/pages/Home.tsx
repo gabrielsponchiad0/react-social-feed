@@ -1,5 +1,5 @@
-import PostForm from '../components/PostForm';
-import PostCard from '../components/PostCard';
+import PostForm from '../components/post/PostForm';
+import PostCard from '../components/post/PostCard';
 import { Post } from '../types/types';
 
 interface HomeProps {
