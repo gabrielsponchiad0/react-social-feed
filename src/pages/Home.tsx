@@ -11,6 +11,7 @@ interface HomeProps {
   onDelete: (id: number) => void;
   onEdit: (id: number) => void;
   onUpdate: (id: number, title: string) => void;
+  onAddComment: (id: number, text: string) => void;
 }
 
 const Home = ({ 
@@ -21,7 +22,8 @@ const Home = ({
   onLike, 
   onDelete, 
   onEdit, 
-  onUpdate 
+  onUpdate,
+  onAddComment,
 }: HomeProps) => {
   return (
     <div className="mx-auto w-full max-w-xl py-12 px-4">
@@ -43,6 +45,7 @@ const Home = ({
             onDelete={onDelete}
             onEdit={onEdit}
             onUpdate={onUpdate}
+            onAddComment={onAddComment}
           />
         )}
       </div>

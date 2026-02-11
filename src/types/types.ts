@@ -1,5 +1,11 @@
 export type VotoUsuario = "like" | null;
 
+export interface Comment {
+  id: number;
+  text: string;
+  createdAt: string | number | Date;
+}
+
 export interface Post {
   id: number;
   title: string;
@@ -9,4 +15,5 @@ export interface Post {
   votoUsuario: VotoUsuario;
   isEditing: boolean;
   isPosting: boolean;
+  comments?: Comment[];
 }

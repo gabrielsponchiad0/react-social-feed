@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Post } from "../types/types";
+import { Post, Comment } from "../types/types";
 
 const STORAGE_KEY_POSTS = "@feedly:posts";
 
@@ -78,12 +78,29 @@ export function usePosts() {
         votoUsuario: null,
         isEditing: false,
         createdAt: new Date().toISOString(),
-        isPosting: false
+        isPosting: false,
+        comments: []
       };
       
       setPosts((prev) => [newPost, ...prev]);
       setIsPosting(false);
     }, 500);
+  };
+
+  const addComment = (postId: number, text: string) => {
+    setPosts((prev) =>
+      prev.map((post) => {
+        if (post.id !== postId) return post;
+        const newComment: Comment = {
+          id: Date.now(),
+          text,
+          createdAt: new Date().toISOString(),
+        };
+        return {
+          ...post, comments: [...(post.comments || []), newComment],
+        };
+      })
+    );
   };
 
   return {
@@ -94,5 +111,6 @@ export function usePosts() {
     toggleEditMode,
     saveUpdatedPost,
     createNewPost,
+    addComment,
   };
 }

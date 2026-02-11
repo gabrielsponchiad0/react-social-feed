@@ -29,6 +29,7 @@ function App() {
     toggleEditMode,
     saveUpdatedPost,
     createNewPost,
+    addComment,
   } = usePosts();
 
   const { search,
@@ -97,6 +98,7 @@ function App() {
                   onDelete={deletePost}
                   onEdit={toggleEditMode}
                   onUpdate={saveUpdatedPost}
+                  onAddComment={addComment}
                 />
               }
             />
@@ -115,6 +117,7 @@ function App() {
                   onDelete={deletePost}
                   onEdit={toggleEditMode}
                   onUpdate={saveUpdatedPost}
+                  onAddComment={addComment}
                 />
               }
             />
