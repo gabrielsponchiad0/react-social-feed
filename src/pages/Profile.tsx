@@ -1,4 +1,4 @@
-const Profile = () => {
+export default function Profile() {
   return (
     <div className="py-12 px-4">
       <div className="flex flex-col items-center mb-12">
@@ -15,6 +15,4 @@ const Profile = () => {
       </div>
     </div>
   );
-};
-
-export default Profile;
+}

@@ -23,7 +23,7 @@ interface SidebarProps {
   isSearchOpen: boolean;
 }
 
-const Sidebar = ({ onSearchClick, isCollapsed, isSearchOpen }: SidebarProps) => {
+export default function Sidebar({ onSearchClick, isCollapsed, isSearchOpen }: SidebarProps) {
   return (
     <>
       {/* Sidebar Desktop */}
@@ -121,7 +121,7 @@ const Sidebar = ({ onSearchClick, isCollapsed, isSearchOpen }: SidebarProps) => 
       </nav>
     </>
   );
-};
+}
 
 /**
  * Item de navegação reutilizável
@@ -189,5 +189,3 @@ const NavItem = ({
     </NavLink>
   );
 };
-
-export default Sidebar;

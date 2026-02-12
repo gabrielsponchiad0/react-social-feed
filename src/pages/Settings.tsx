@@ -1,7 +1,7 @@
 import { useTheme } from "../components/theme/theme-provider";
 import { Moon, Sun, Monitor } from "lucide-react";
 
-const Settings = () => {
+export default function Settings() {
   const { theme, setTheme } = useTheme();
 
   return (
@@ -52,6 +52,4 @@ const Settings = () => {
       </div>
     </div>
   );
-};
-
-export default Settings;
+}

@@ -1,4 +1,4 @@
-const Messages = () => {
+export default function Messages() {
   return (
     <div className="py-12 px-4">
       <h2 className="text-2xl font-bold mb-6">Mensagens</h2>
@@ -15,6 +15,4 @@ const Messages = () => {
       </div>
     </div>
   );
-};
-
-export default Messages;
+}

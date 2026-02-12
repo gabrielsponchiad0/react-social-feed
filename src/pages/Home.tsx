@@ -14,7 +14,7 @@ interface HomeProps {
   onAddComment: (id: number, text: string) => void;
 }
 
-const Home = ({ 
+export default function Home({ 
   posts, 
   filteredPosts, 
   isPosting, 
@@ -24,7 +24,7 @@ const Home = ({
   onEdit, 
   onUpdate,
   onAddComment,
-}: HomeProps) => {
+}: HomeProps) {
   return (
     <div className="mx-auto w-full max-w-xl py-12 px-4">
       <PostForm 
@@ -51,6 +51,4 @@ const Home = ({
       </div>
     </div>
   );
-};
-
-export default Home;
+}

@@ -231,7 +231,7 @@ function PostItem({
 
       {/* Painel de Comentários */}
       {showComments && (
-        <div className="fixed inset-0 z-50 flex justify-end">
+        <div className="fixed inset-0 z-[150] flex justify-end">
           {/* Fundo escurecido */}
           <div 
             className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300"

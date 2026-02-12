@@ -1,4 +1,4 @@
-const Explore = () => {
+export default function Explore() {
   return (
     <div className="py-12 px-4">
       <h2 className="text-2xl font-bold mb-6">Explorar</h2>
@@ -11,6 +11,4 @@ const Explore = () => {
       </div>
     </div>
   );
-};
-
-export default Explore;
+}
